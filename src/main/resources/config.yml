@@ -1,3 +1,9 @@
 options:
-  auto-update: true
+  # Used when a mob does not yet have an explicit entry under "chances".
+  default-drop-chance: 5.0
+
+  # Multiplies the configured drop chance when the killer uses Slimefun's Sword of Beheading.
   sword-of-beheading-multiplier: 1.8
+
+# Per-mob chances are added automatically when the plugin starts.
+chances: {}

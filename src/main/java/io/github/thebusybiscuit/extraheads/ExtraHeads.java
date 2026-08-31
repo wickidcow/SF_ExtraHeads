@@ -9,17 +9,16 @@ import io.github.thebusybiscuit.extraheads.listeners.HeadListener;
 import io.github.thebusybiscuit.extraheads.setup.ItemSetup;
 import io.github.thebusybiscuit.extraheads.setup.Registry;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.BlobBuildUpdater;
-
-import lombok.Getter;
 
 public class ExtraHeads extends JavaPlugin implements SlimefunAddon {
 
-    @Getter
     private static ExtraHeads instance;
 
     private Registry registry;
+
+    public static ExtraHeads getInstance() {
+        return instance;
+    }
 
     public static Registry getRegistry() {
         return getInstance().registry;
@@ -29,19 +28,20 @@ public class ExtraHeads extends JavaPlugin implements SlimefunAddon {
     public void onEnable() {
         instance = this;
 
-        // registry and config
-        registry = new Registry(new Config(this));
+        saveDefaultConfig();
+        registry = new Registry(getConfig());
 
-        // Setting up bStats
         new Metrics(this, 5650);
 
-        if (registry.getConfig().getBoolean("options.auto-update") && getPluginVersion().startsWith("Dev")) {
-            new BlobBuildUpdater(this, getFile(), "ExtraHeads").start();
-        }
-
         ItemSetup.setup();
-
         new HeadListener(this);
+
+        getLogger().info("ExtraHeads Legacy 1.0.2 enabled with Slimefun compatibility and no GuizhanLibPlugin dependency.");
+    }
+
+    @Override
+    public void onDisable() {
+        instance = null;
     }
 
     @Override
@@ -53,6 +53,6 @@ public class ExtraHeads extends JavaPlugin implements SlimefunAddon {
     @Override
     @Nonnull
     public String getBugTrackerURL() {
-        return "https://github.com/Slimefun-Addon-Community/ExtraHeads/issues";
+        return "https://github.com/wickidcow/SF_ExtraHeads/issues";
     }
 }

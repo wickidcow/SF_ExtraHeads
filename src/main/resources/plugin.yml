@@ -1,0 +1,12 @@
+name: ExtraHeads
+version: '${project.version}'
+main: io.github.thebusybiscuit.extraheads.ExtraHeads
+api-version: '1.21'
+authors:
+  - TheBusyBiscuit
+  - ybw0014
+  - wickidcow
+description: Adds collectible mob heads to Slimefun with modern Paper support.
+website: https://github.com/wickidcow/SF_ExtraHeads
+depend:
+  - Slimefun
