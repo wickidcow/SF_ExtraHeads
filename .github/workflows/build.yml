@@ -175,17 +175,17 @@ jobs:
           TAG="v${RELEASE_VERSION}"
           JAR="dist/${OUTPUT_NAME}"
           NOTES="$(cat <<'EOF'
-ExtraHeads Legacy 1.0.2 modernizes the addon for current Slimefun servers.
+          ExtraHeads Legacy 1.0.2 modernizes the addon for current Slimefun servers.
 
-- Minecraft 1.21.11 / Paper 26.1.x and 26.2 validation
-- Slimefun Legacy and Slimefun United compatibility validation
-- GuizhanLibPlugin runtime dependency removed
-- GuizhanLib source/build dependency removed
-- Added Happy Ghast, Copper Golem, Nautilus, Zombie Nautilus, Camel Husk, and Parched heads
-- Modern registry-safe entity lookup for current Paper EntityType APIs
-- Stable raw release artifact: SF_ExtraHeads1.0.2.jar
-EOF
-)"
+          - Minecraft 1.21.11 / Paper 26.1.x and 26.2 validation
+          - Slimefun Legacy and Slimefun United compatibility validation
+          - GuizhanLibPlugin runtime dependency removed
+          - GuizhanLib source/build dependency removed
+          - Added Happy Ghast, Copper Golem, Nautilus, Zombie Nautilus, Camel Husk, and Parched heads
+          - Modern registry-safe entity lookup for current Paper EntityType APIs
+          - Stable raw release artifact: SF_ExtraHeads1.0.2.jar
+          EOF
+          )"
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" "$JAR" --clobber --repo "$GITHUB_REPOSITORY"
             gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --title "SF_ExtraHeads ${RELEASE_VERSION}" --notes "$NOTES"
