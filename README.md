@@ -24,7 +24,7 @@ Each registered head appears in the Slimefun guide under the **Extra Heads** cat
 
 ## ✨ New in 1.0.2
 
-This maintenance release adds current mob coverage and removes the old GuizhanLib runtime problem.
+This maintenance release adds current mob coverage and updates addon for Slimefun Legacy and Slimefun United
 
 New heads:
 
