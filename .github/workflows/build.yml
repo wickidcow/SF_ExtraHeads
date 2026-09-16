@@ -12,8 +12,8 @@ permissions:
   contents: write
 
 env:
-  RELEASE_VERSION: "1.0.2"
-  OUTPUT_NAME: "SF_ExtraHeads1.0.2.jar"
+  RELEASE_VERSION: "1.0.3"
+  OUTPUT_NAME: "SF_ExtraHeads1.0.3.jar"
 
 jobs:
   compatibility:
@@ -79,45 +79,63 @@ jobs:
           java-version: '25'
           cache: maven
 
+      - name: Resolve Slimefun coordinate
+        id: sf
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ matrix.slimefun }}" == "legacy" ]]; then
+            echo 'group=com.github.slimefun' >> "$GITHUB_OUTPUT"
+            echo 'artifact=Slimefun' >> "$GITHUB_OUTPUT"
+            echo 'version=EXTRAHEADS-LEGACY-SNAPSHOT' >> "$GITHUB_OUTPUT"
+          else
+            VERSION="$(mvn -q -f .deps/Slimefun-United/pom.xml help:evaluate -Dexpression=project.version -DforceStdout)"
+            echo 'group=io.github.slimefun_united' >> "$GITHUB_OUTPUT"
+            echo 'artifact=slimefun-united' >> "$GITHUB_OUTPUT"
+            echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify Paper 1.21.11 release floor
+        if: matrix.slimefun == 'legacy'
+        run: >-
+          mvn -B clean verify
+          -Dpaper.version=1.21.11-R0.1-SNAPSHOT
+          -Dslimefun.groupId=${{ steps.sf.outputs.group }}
+          -Dslimefun.artifactId=${{ steps.sf.outputs.artifact }}
+          -Dslimefun.version=${{ steps.sf.outputs.version }}
+
       - name: Verify Paper 26.1.x
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ "${{ matrix.slimefun }}" == "legacy" ]]; then
-            SF_GROUP="com.github.slimefun"
-            SF_ARTIFACT="Slimefun"
-            SF_VERSION="EXTRAHEADS-LEGACY-SNAPSHOT"
-          else
-            SF_GROUP="io.github.slimefun_united"
-            SF_ARTIFACT="slimefun-united"
-            SF_VERSION="$(mvn -q -f .deps/Slimefun-United/pom.xml help:evaluate -Dexpression=project.version -DforceStdout)"
-          fi
+        run: >-
+          mvn -B clean verify
+          '-Dpaper.version=[26.1.build,26.2.build)'
+          -Dslimefun.groupId=${{ steps.sf.outputs.group }}
+          -Dslimefun.artifactId=${{ steps.sf.outputs.artifact }}
+          -Dslimefun.version=${{ steps.sf.outputs.version }}
 
-          mvn -B clean verify \
-            -Dpaper.version='[26.1.build,26.2.build)' \
-            -Dslimefun.groupId="$SF_GROUP" \
-            -Dslimefun.artifactId="$SF_ARTIFACT" \
-            -Dslimefun.version="$SF_VERSION"
+      - name: Verify Paper 26.2 primary
+        run: >-
+          mvn -B clean verify
+          -Dpaper.version=26.2.build.112-stable
+          -Dslimefun.groupId=${{ steps.sf.outputs.group }}
+          -Dslimefun.artifactId=${{ steps.sf.outputs.artifact }}
+          -Dslimefun.version=${{ steps.sf.outputs.version }}
 
-      - name: Verify Paper 26.2
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ "${{ matrix.slimefun }}" == "legacy" ]]; then
-            SF_GROUP="com.github.slimefun"
-            SF_ARTIFACT="Slimefun"
-            SF_VERSION="EXTRAHEADS-LEGACY-SNAPSHOT"
-          else
-            SF_GROUP="io.github.slimefun_united"
-            SF_ARTIFACT="slimefun-united"
-            SF_VERSION="$(mvn -q -f .deps/Slimefun-United/pom.xml help:evaluate -Dexpression=project.version -DforceStdout)"
-          fi
+      - name: Verify Paper 26.3 alpha
+        run: >-
+          mvn -B clean verify
+          -Dpaper.version=26.3-rc-3.build.1-alpha
+          -Dslimefun.groupId=${{ steps.sf.outputs.group }}
+          -Dslimefun.artifactId=${{ steps.sf.outputs.artifact }}
+          -Dslimefun.version=${{ steps.sf.outputs.version }}
 
-          mvn -B clean verify \
-            -Dpaper.version='[26.2.build,)' \
-            -Dslimefun.groupId="$SF_GROUP" \
-            -Dslimefun.artifactId="$SF_ARTIFACT" \
-            -Dslimefun.version="$SF_VERSION"
+      - name: Rebuild universal release JAR from Paper 1.21.11
+        if: matrix.slimefun == 'legacy'
+        run: >-
+          mvn -B clean package
+          -Dpaper.version=1.21.11-R0.1-SNAPSHOT
+          -Dslimefun.groupId=${{ steps.sf.outputs.group }}
+          -Dslimefun.artifactId=${{ steps.sf.outputs.artifact }}
+          -Dslimefun.version=${{ steps.sf.outputs.version }}
 
       - name: Stage raw release JAR
         if: matrix.slimefun == 'legacy'
@@ -128,6 +146,8 @@ jobs:
           test -s "target/${OUTPUT_NAME}"
           cp "target/${OUTPUT_NAME}" "dist/${OUTPUT_NAME}"
           jar tf "dist/${OUTPUT_NAME}" | grep -Fxq 'plugin.yml'
+          unzip -p "dist/${OUTPUT_NAME}" plugin.yml | grep -Fq "version: ${RELEASE_VERSION}"
+          javap -verbose -classpath "dist/${OUTPUT_NAME}" io.github.thebusybiscuit.extraheads.ExtraHeads | grep -Fq 'major version: 65'
           if jar tf "dist/${OUTPUT_NAME}" | grep -q '^net/guizhanss/guizhanlib/'; then
             echo "GuizhanLib classes must not be bundled."
             exit 1
@@ -140,24 +160,22 @@ jobs:
         with:
           name: ${{ env.OUTPUT_NAME }}
           path: dist/${{ env.OUTPUT_NAME }}
+          archive: false
           if-no-files-found: error
 
   release:
-    name: Publish 1.0.2 raw JAR
+    name: Publish 1.0.3 raw JAR
     needs: compatibility
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') || github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout release target
         uses: actions/checkout@v6
-
       - name: Download validated raw JAR
         uses: actions/download-artifact@v8
         with:
           name: ${{ env.OUTPUT_NAME }}
           path: dist
-
       - name: Verify release JAR
         shell: bash
         run: |
@@ -165,7 +183,6 @@ jobs:
           test -s "dist/${OUTPUT_NAME}"
           jar tf "dist/${OUTPUT_NAME}" | grep -Fxq 'plugin.yml'
           sha256sum "dist/${OUTPUT_NAME}"
-
       - name: Publish raw GitHub release asset
         env:
           GH_TOKEN: ${{ github.token }}
@@ -174,18 +191,7 @@ jobs:
           set -euo pipefail
           TAG="v${RELEASE_VERSION}"
           JAR="dist/${OUTPUT_NAME}"
-          NOTES="$(cat <<'EOF'
-          ExtraHeads Legacy 1.0.2 modernizes the addon for current Slimefun servers.
-
-          - Minecraft 1.21.11 / Paper 26.1.x and 26.2 validation
-          - Slimefun Legacy and Slimefun United compatibility validation
-          - GuizhanLibPlugin runtime dependency removed
-          - GuizhanLib source/build dependency removed
-          - Added Happy Ghast, Copper Golem, Nautilus, Zombie Nautilus, Camel Husk, and Parched heads
-          - Modern registry-safe entity lookup for current Paper EntityType APIs
-          - Stable raw release artifact: SF_ExtraHeads1.0.2.jar
-          EOF
-          )"
+          NOTES="ExtraHeads 1.0.3 adds Paper 26.3 alpha compatibility validation while retaining Paper 1.21.11, 26.1.x and 26.2 support, Slimefun Legacy/United validation, registry-safe entity lookup, and the existing modern mob-head additions."
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" "$JAR" --clobber --repo "$GITHUB_REPOSITORY"
             gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --title "SF_ExtraHeads ${RELEASE_VERSION}" --notes "$NOTES"
