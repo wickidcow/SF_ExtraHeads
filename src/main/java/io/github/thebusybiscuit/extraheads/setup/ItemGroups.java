@@ -1,6 +1,6 @@
 package io.github.thebusybiscuit.extraheads.setup;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -10,6 +10,8 @@ import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 
 public final class ItemGroups {
+
+    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacyAmpersand();
 
     public static final ItemGroup MAIN = new ItemGroup(
         new NamespacedKey(ExtraHeads.getInstance(), "extra_heads"),
@@ -24,7 +26,7 @@ public final class ItemGroups {
 
     private static ItemStack namedItem(ItemStack item, String name) {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        meta.displayName(LEGACY.deserialize(name));
         item.setItemMeta(meta);
         return item;
     }
