@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -161,9 +162,10 @@ public final class ItemSetup {
     ) {
         ItemStack display = item.clone();
         ItemMeta meta = display.getItemMeta();
-        meta.setLore(List.of(
-            ChatColor.RESET + "Kill 1 " + displayName,
-            ChatColor.GRAY + "Chance: " + ChatColor.YELLOW + chance + "%"
+        meta.lore(List.of(
+            Component.text("Kill 1 " + displayName),
+            Component.text("Chance: ", NamedTextColor.GRAY)
+                .append(Component.text(chance + "%", NamedTextColor.YELLOW))
         ));
         display.setItemMeta(meta);
         return display;
