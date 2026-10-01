@@ -1,9 +1,29 @@
-# SF_ExtraHeads 1.0.2
+# SF_ExtraHeads 1.0.4
 
-- Minecraft 1.21.11 / Paper 26.1.x and 26.2 compatibility work
-- Slimefun Legacy and Slimefun United validation
-- GuizhanLibPlugin runtime dependency removed
-- GuizhanLib build/source dependency removed
-- Added Happy Ghast, Copper Golem, Nautilus, Zombie Nautilus, Camel Husk, and Parched heads
-- Modern Paper EntityType compatibility
-- Raw release artifact: `SF_ExtraHeads1.0.2.jar`
+- Added 21 missing collectible heads for normal vanilla mobs:
+  - Bee
+  - Cat
+  - Cod
+  - Donkey
+  - Endermite
+  - Hoglin
+  - Mule
+  - Phantom
+  - Piglin Brute
+  - Pufferfish
+  - Salmon
+  - Silverfish
+  - Skeleton Horse
+  - Snow Golem
+  - Sulfur Cube
+  - Trader Llama
+  - Tropical Fish
+  - Warden
+  - Wolf
+  - Zoglin
+  - Zombie Horse
+- Preserved every existing ExtraHeads Slimefun item ID and existing drop behavior.
+- New heads use the existing `chances.<MOB>` configuration and Sword of Beheading multiplier.
+- Entity types unavailable on an older supported Paper build are skipped safely at runtime.
+- Slimefun Legacy and Slimefun United compatibility validation remains enabled.
+- Raw release artifact: `SF_ExtraHeads1.0.4.jar`
