@@ -36,7 +36,7 @@ public class ExtraHeads extends JavaPlugin implements SlimefunAddon {
         ItemSetup.setup();
         new HeadListener(this);
 
-        getLogger().info("ExtraHeads Legacy 1.0.2 enabled with Slimefun compatibility and no GuizhanLibPlugin dependency.");
+        getLogger().info("ExtraHeads Legacy " + getPluginMeta().getVersion() + " enabled with Slimefun compatibility and no GuizhanLibPlugin dependency.");
     }
 
     @Override

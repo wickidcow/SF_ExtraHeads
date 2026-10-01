@@ -82,6 +82,29 @@ public final class ItemSetup {
         {"ZOMBIE_NAUTILUS", "fd9a933376da44c3391307cb9f4cf03f16f3a54f495fd5a11bad8a373f9d5720"},
         {"CAMEL_HUSK", "750bfc9b2cc40f4d8d0224ccbabac26b338aa947d99dcde769f859b59b8d0b0e"},
         {"PARCHED", "24aeceff5f26dd8413c5c03547c234ac03108d187af0b9cd834a8ce12598591c"},
+
+        // Complete normal-mob coverage. Existing IDs above are intentionally unchanged.
+        {"BEE", "59ac16f296b461d05ea0785d477033e527358b4f30c266aa02f020157ffca736"},
+        {"CAT", "22c1e81ff03e82a3e71e0cd5fbec607e11361089aa47f290d46c8a2c07460d92"},
+        {"COD", "7892d7dd6aadf35f86da27fb63da4edda211df96d2829f691462a4fb1cab0"},
+        {"DONKEY", "cac790740da65162cd3a06cf1fa869790e724163066d349dbd24349afacfbcab"},
+        {"ENDERMITE", "84aaffa4c09e2eafb85d3522122db0aa45874bea4e3f5e7566b4d166c7df8"},
+        {"HOGLIN", "9bb9bc0f01dbd762a08d9e77c08069ed7c95364aa30ca1072208561b730e8d75"},
+        {"MULE", "5ae045906cfccbc6487bed4c8d5d85e6dab29aad149ac99eb66f7243ce4ffe76"},
+        {"PHANTOM", "7e95153ec23284b283f00d19d29756f244313a061b70ac03b97d236ee57bd982"},
+        {"PIGLIN_BRUTE", "e435d373624f455b9f9df89c101877c76c06285b4ad1ee4853b119c5a5f8c535"},
+        {"PUFFERFISH", "17152876bc3a96dd2a2299245edb3beef647c8a56ac8853a687c3e7b5d8bb"},
+        {"SALMON", "8aeb21a25e46806ce8537fbd6668281cf176ceafe95af90e94a5fd84924878"},
+        {"SILVERFISH", "da91dab8391af5fda54acd2c0b18fbd819b865e1a8f1d623813fa761e924540"},
+        {"SKELETON_HORSE", "d8c86aaabad95150f09204532df243ba614e67b582dc039e7296ba5f4f7e759c"},
+        {"SNOW_GOLEM", "17e9831daf681f8c4c4775cb4653c34be2898f87efd3b598d555518f2fac6"},
+        {"SULFUR_CUBE", "f0d9056ec6db388af12304ef96ffdc8228dcf368ab255323258b716f990b4ab"},
+        {"TRADER_LLAMA", "20fdfa60c624fb667c8313b2fb1dab40e0ad2e6e469b567bf596ad26392319c5"},
+        {"TROPICAL_FISH", "179e48d814aa3bc984e8a6fd4fb170ba0bb4893f4bbebde5fdf3f8f871cb292f"},
+        {"WARDEN", "c6f74361fb00490a0a98eeb814544ecdd775cb55633dbb114e60d27004cb1020"},
+        {"WOLF", "8f0b221786f193c06dd19a7875a903635113f84523927bb69764237fe20703de"},
+        {"ZOGLIN", "3c8c7c5d0556cd6629716e39188b21e7c0477479f242587bf19e0bc76b322551"},
+        {"ZOMBIE_HORSE", "246938d4f99b8a21339e87e43a461fd8745e766b4253a357191a7ddb463344b2"},
     };
 
     private ItemSetup() {}
