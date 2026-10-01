@@ -6,15 +6,15 @@
 
 ![Slimefun Legacy](https://img.shields.io/badge/Slimefun-Legacy-6bd425?style=for-the-badge)
 ![Slimefun United](https://img.shields.io/badge/Slimefun-United-compatible-6bd425?style=for-the-badge)
-![Minecraft 1.21.11](https://img.shields.io/badge/Minecraft-1.21.11-62b47a?style=for-the-badge)
-![Paper 26.1.x / 26.2](https://img.shields.io/badge/Paper-26.1.x%20%7C%2026.2-blue?style=for-the-badge)
+![Minecraft 1.21.11+](https://img.shields.io/badge/Minecraft-1.21.11%2B-62b47a?style=for-the-badge)
+![Paper 26.x](https://img.shields.io/badge/Paper-26.x-blue?style=for-the-badge)
 ![Java 21+](https://img.shields.io/badge/Java-21%2B-orange?style=for-the-badge)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 </div>
 
 > [!IMPORTANT]
-> ExtraHeads Legacy is an **unofficial community-maintained fork** of ExtraHeads. It preserves the existing Slimefun head IDs and gameplay while updating the addon for **Slimefun Legacy**, **Slimefun United**, Minecraft **1.21.11**, and modern Paper builds.
+> ExtraHeads Legacy is an **unofficial community-maintained fork** of ExtraHeads. It preserves existing Slimefun head IDs and gameplay while maintaining the addon for **Slimefun Legacy**, **Slimefun United**, Minecraft **1.21.11+**, and modern Paper builds.
 
 ## 💀 What ExtraHeads does
 
@@ -22,46 +22,63 @@ ExtraHeads adds collectible Slimefun mob heads that can drop when supported mobs
 
 Each registered head appears in the Slimefun guide under the **Extra Heads** category. Drop chances are configurable per mob, and Slimefun's **Sword of Beheading** can multiply the configured chance.
 
-## ✨ New in 1.0.2
+## ✨ New in 1.0.4
 
-This maintenance release adds current mob coverage and updates addon for Slimefun Legacy and Slimefun United
+Version 1.0.4 finishes the missing normal-mob head coverage without changing existing IDs or drop behavior.
 
 New heads:
 
-- **Happy Ghast**
-- **Copper Golem**
-- **Nautilus**
-- **Zombie Nautilus**
-- **Camel Husk**
-- **Parched**
+- **Bee**
+- **Cat**
+- **Cod**
+- **Donkey**
+- **Endermite**
+- **Hoglin**
+- **Mule**
+- **Phantom**
+- **Piglin Brute**
+- **Pufferfish**
+- **Salmon**
+- **Silverfish**
+- **Skeleton Horse**
+- **Snow Golem**
+- **Sulfur Cube**
+- **Trader Llama**
+- **Tropical Fish**
+- **Warden**
+- **Wolf**
+- **Zoglin**
+- **Zombie Horse**
 
-The existing Creaking, Breeze, Bogged, Armadillo, Sniffer, Camel, Frog, Allay, and older ExtraHeads content is preserved.
+The existing ExtraHeads collection — including Creaking, Breeze, Bogged, Armadillo, Sniffer, Happy Ghast, Copper Golem, Nautilus, Zombie Nautilus, Camel Husk, Parched, and all older heads — remains unchanged.
+
+Vanilla mobs that already have their own native Minecraft mob-head/skull item are intentionally not duplicated with a second ExtraHeads item.
 
 ## 🧪 Compatibility targets
 
 | Component | Target |
 | --- | --- |
-| Minecraft | **1.21.11** |
-| Paper | **26.1.x and 26.2** |
+| Minecraft | **1.21.11+** |
+| Paper | **1.21.11 API floor, Paper 26.x validation** |
 | Java | **21+ bytecode**, CI on Java 25 |
 | Primary Slimefun | **Slimefun Legacy** |
 | Secondary compatibility | **Slimefun United** |
 
-GitHub Actions compiles the addon against both Slimefun implementations and validates both supported Paper generations before the release job is allowed to publish.
+GitHub Actions compiles the addon against both Slimefun implementations and validates the supported Paper compatibility range before a release JAR is published.
 
 ## 🛠️ Slimefun Legacy maintenance
 
-Version `1.0.2` includes:
+The maintained fork includes:
 
 - removal of the `GuizhanLibPlugin` runtime requirement;
 - removal of the `guizhanlib-all` build dependency;
-- replacement of GuizhanLib Minecraft-version/entity compatibility helpers with local Paper-safe entity resolution;
+- local Paper-safe entity resolution;
 - modern `EntityType` handling that does not assume `EntityType` is an enum;
-- Bukkit-native configuration handling instead of Slimefun's relocated Dough configuration wrapper;
-- removal of the obsolete Blob Builds auto-updater;
-- preservation of existing Slimefun item IDs such as `CREEKING_HEAD`;
-- build validation against Slimefun Legacy and Slimefun United;
-- Paper 26.1.x and 26.2 compile validation;
+- automatic skipping of heads for entity types not present on the running Paper version;
+- Bukkit-native configuration handling;
+- preservation of every existing Slimefun head ID;
+- Slimefun Legacy and Slimefun United build validation;
+- Paper 1.21.11+ / 26.x compatibility validation;
 - raw versioned JAR releases.
 
 ## ⚙️ Configuration
@@ -82,21 +99,21 @@ Example:
 
 ```yaml
 chances:
-  CREEKING: 5.0
-  HAPPY_GHAST: 5.0
-  COPPER_GOLEM: 5.0
-  NAUTILUS: 5.0
+  COD: 5.0
+  SALMON: 5.0
+  WARDEN: 5.0
+  SULFUR_CUBE: 5.0
 ```
 
 Values are percentages.
 
 ## 📦 Current release
 
-**Version:** `1.0.2`
+**Version:** `1.0.4`
 
 Release builds are published as the raw JAR:
 
-`SF_ExtraHeads1.0.2.jar`
+`SF_ExtraHeads1.0.4.jar`
 
 Install either **Slimefun Legacy** or a compatible **Slimefun United** build first, place the ExtraHeads JAR in the server's `plugins` directory, and restart the server.
 
