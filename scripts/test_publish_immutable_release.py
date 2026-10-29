@@ -18,8 +18,8 @@ class ImmutableReleaseTest(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.work = Path(self.tmp.name)
         (self.work / "dist").mkdir()
-        self.jar = self.work / "dist" / "SF_ExtraHeads1.0.4.jar"
-        self.rewrite_jar("name: ExtraHeads\nversion: '1.0.4'\n")
+        self.jar = self.work / "dist" / "SF_ExtraHeads1.0.5.jar"
+        self.rewrite_jar("name: ExtraHeads\nversion: '1.0.5'\n")
         bindir = self.work / "bin"
         bindir.mkdir()
         mock = bindir / "gh"
@@ -43,10 +43,10 @@ class ImmutableReleaseTest(unittest.TestCase):
             "GH_CREATE_FAIL": "0",
             "GITHUB_REPOSITORY": "wickidcow/SF_ExtraHeads",
             "GITHUB_SHA": "a" * 40,
-            "GITHUB_REF": "refs/tags/v1.0.4",
+            "GITHUB_REF": "refs/tags/v1.0.5",
             "GITHUB_EVENT_NAME": "workflow_dispatch",
-            "RELEASE_VERSION": "1.0.4",
-            "OUTPUT_NAME": "SF_ExtraHeads1.0.4.jar",
+            "RELEASE_VERSION": "1.0.5",
+            "OUTPUT_NAME": "SF_ExtraHeads1.0.5.jar",
         })
 
     def rewrite_jar(self, descriptor):
@@ -61,6 +61,22 @@ class ImmutableReleaseTest(unittest.TestCase):
     def calls(self):
         return self.log.read_text(encoding="utf-8").splitlines() if self.log.exists() else []
 
+    def test_distinct_version_matches_pom_and_workflow(self):
+        import xml.etree.ElementTree as ET
+        pom = ET.parse(ROOT / "pom.xml")
+        version = pom.getroot().find("{http://maven.apache.org/POM/4.0.0}version")
+        self.assertIsNotNone(version)
+        self.assertEqual("1.0.5", version.text)
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn('RELEASE_VERSION: "1.0.5"', workflow)
+        self.assertIn('OUTPUT_NAME: "SF_ExtraHeads1.0.5.jar"', workflow)
+        self.assertIn("name: Publish 1.0.5 raw JAR", workflow)
+        self.assertIn("-Dpaper.version=26.3.build.176-stable", workflow)
+        self.assertIn("name: ExtraHeads", workflow)
+        self.assertIn("main: io.github.thebusybiscuit.extraheads.ExtraHeads", workflow)
+        self.assertIn("io/github/thebusybiscuit/extraheads/ExtraHeads.class", workflow)
+        self.assertNotIn("26.3-rc-3.build.1-alpha", workflow)
+
     def test_workflow_does_not_publish_on_push_or_pr(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("permissions:\n  contents: read", workflow)
@@ -68,7 +84,7 @@ class ImmutableReleaseTest(unittest.TestCase):
             "if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/v')",
             workflow)
         self.assertIn("run: bash scripts/publish_immutable_release.sh", workflow)
-        self.assertIn("test_publish_immutable_release.py", workflow)
+        self.assertIn("test_*.py", workflow)
         self.assertNotIn("gh release upload", workflow)
         self.assertNotIn("--clobber", workflow)
 
@@ -77,8 +93,8 @@ class ImmutableReleaseTest(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         calls = self.calls()
         self.assertEqual(2, len(calls))
-        self.assertIn("release view v1.0.4", calls[0])
-        self.assertIn("release create v1.0.4 dist/SF_ExtraHeads1.0.4.jar", calls[1])
+        self.assertIn("release view v1.0.5", calls[0])
+        self.assertIn("release create v1.0.5 dist/SF_ExtraHeads1.0.5.jar", calls[1])
         self.assertIn("--verify-tag", calls[1])
         self.assertIn("--target " + "a" * 40, calls[1])
         self.assertFalse(any("release upload" in c or "release edit" in c or "--clobber" in c
@@ -107,10 +123,10 @@ class ImmutableReleaseTest(unittest.TestCase):
         self.assertEqual([], self.calls())
 
     def test_wrong_tag_and_filename_are_refused(self):
-        self.env["GITHUB_REF"] = "refs/tags/v1.0.3"
-        self.assertNotEqual(0, self.execute().returncode)
         self.env["GITHUB_REF"] = "refs/tags/v1.0.4"
-        self.env["OUTPUT_NAME"] = "SF_ExtraHeads1.0.3.jar"
+        self.assertNotEqual(0, self.execute().returncode)
+        self.env["GITHUB_REF"] = "refs/tags/v1.0.5"
+        self.env["OUTPUT_NAME"] = "SF_ExtraHeads1.0.4.jar"
         self.assertNotEqual(0, self.execute().returncode)
         self.assertEqual([], self.calls())
 
@@ -119,14 +135,14 @@ class ImmutableReleaseTest(unittest.TestCase):
         self.assertNotEqual(0, self.execute().returncode)
         self.rewrite_jar("name: ExtraHeads\nversion: 1.0.1\n")
         self.assertNotEqual(0, self.execute().returncode)
-        self.rewrite_jar("name: Other\nversion: '1.0.4'\n")
+        self.rewrite_jar("name: Other\nversion: '1.0.5'\n")
         self.assertNotEqual(0, self.execute().returncode)
         self.assertEqual([], self.calls())
 
     def test_missing_artifact_and_failed_create_refuse_success(self):
         self.jar.unlink()
         self.assertNotEqual(0, self.execute().returncode)
-        self.rewrite_jar("name: ExtraHeads\nversion: '1.0.4'\n")
+        self.rewrite_jar("name: ExtraHeads\nversion: '1.0.5'\n")
         self.env["GH_CREATE_FAIL"] = "1"
         self.assertNotEqual(0, self.execute().returncode)
         self.assertEqual(2, len(self.calls()))
