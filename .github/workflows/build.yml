@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout ExtraHeads
         uses: actions/checkout@v6
+      - name: Regression-test immutable manual publication policy (offline)
+        run: python3 -m unittest discover -s scripts -p 'test_publish_immutable_release.py' -v
 
       - name: Set up Java 25
         uses: actions/setup-java@v5
@@ -82,6 +84,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+
       - name: Install checksum-verified Apache Maven 3.10.0
         run: bash scripts/install_maven_3_10.sh
 
@@ -172,7 +175,7 @@ jobs:
   release:
     name: Publish 1.0.4 raw JAR
     needs: compatibility
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -191,21 +194,8 @@ jobs:
           test -s "dist/${OUTPUT_NAME}"
           jar tf "dist/${OUTPUT_NAME}" | grep -Fxq 'plugin.yml'
           sha256sum "dist/${OUTPUT_NAME}"
-      - name: Publish raw GitHub release asset
+      - name: Publish only a new release at an explicitly dispatched version tag
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
-        run: |
-          set -euo pipefail
-          TAG="v${RELEASE_VERSION}"
-          JAR="dist/${OUTPUT_NAME}"
-          NOTES="ExtraHeads 1.0.4 completes collectible head coverage for normal vanilla mobs missing from ExtraHeads, including Cod, Salmon, Warden, Wolf, Piglin Brute, Tropical Fish, Sulfur Cube, and 14 more, while preserving every existing head ID and drop behavior."
-          if [[ "$GITHUB_REF" != "refs/tags/$TAG" ]]; then
-            echo "Refusing publication: expected refs/tags/$TAG, got $GITHUB_REF" >&2
-            exit 1
-          fi
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Refusing to overwrite existing release $TAG or its assets." >&2
-            exit 1
-          fi
-            gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "SF_ExtraHeads ${RELEASE_VERSION}" --notes "$NOTES"
+        run: bash scripts/publish_immutable_release.sh
