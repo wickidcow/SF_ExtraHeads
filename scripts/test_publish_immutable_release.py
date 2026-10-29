@@ -72,6 +72,9 @@ class ImmutableReleaseTest(unittest.TestCase):
         self.assertIn('OUTPUT_NAME: "SF_ExtraHeads1.0.5.jar"', workflow)
         self.assertIn("name: Publish 1.0.5 raw JAR", workflow)
         self.assertIn("-Dpaper.version=26.3.build.176-stable", workflow)
+        self.assertIn("name: ExtraHeads", workflow)
+        self.assertIn("main: io.github.thebusybiscuit.extraheads.ExtraHeads", workflow)
+        self.assertIn("io/github/thebusybiscuit/extraheads/ExtraHeads.class", workflow)
         self.assertNotIn("26.3-rc-3.build.1-alpha", workflow)
 
     def test_workflow_does_not_publish_on_push_or_pr(self):
